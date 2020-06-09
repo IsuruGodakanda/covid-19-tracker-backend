@@ -33,11 +33,17 @@ router.post('/onboard', (req, res) => {
       const newPatient = new Patient({
         name: req.body.name,
         nic: req.body.nic,
-        address: req.body.address
+        gender: req.body.gender,
+        age: req.body.age,
+        medical_history: req.body.medical_history,
+        address: req.body.address,
+        district: req.body.district
       });
 
-      let hash = CryptoJS.AES.encrypt(newPatient.address, keys.encryptionKey).toString();
-      newPatient.address = hash;
+      let hash_address = CryptoJS.AES.encrypt(newPatient.address, keys.encryptionKey).toString();
+      let hash_medical_history = CryptoJS.AES.encrypt(newPatient.medical_history, keys.encryptionKey).toString();
+      newPatient.address = hash_address;
+      newPatient.medical_history = hash_medical_history;
       newPatient
         .save()
         .then((patient) => res.json(patient))
@@ -61,10 +67,18 @@ router.get('/all', (req, res) => {
       }
 
       let obj = [];
-      records.map((record) => {
-        let bytes = CryptoJS.AES.decrypt(record.address, keys.encryptionKey);
-        let originalText = bytes.toString(CryptoJS.enc.Utf8);
-        obj.push({ name: record.name, address: originalText });
+      records.reverse().map((record) => {
+        let originalAddress = CryptoJS.AES.decrypt(record.address, keys.encryptionKey).toString(CryptoJS.enc.Utf8);
+        let originalMedicalHistory = CryptoJS.AES.decrypt(record.medical_history, keys.encryptionKey).toString(
+          CryptoJS.enc.Utf8
+        );
+        obj.push({
+          name: record.name,
+          age: record.age,
+          address: originalAddress,
+          district: record.district,
+          medical_history: originalMedicalHistory
+        });
       });
 
       res.json(obj);

@@ -6,7 +6,11 @@ module.exports = function validatePatientOnboardInput(data) {
 
   data.name = !isEmpty(data.name) ? data.name : '';
   data.nic = !isEmpty(data.nic) ? data.nic : '';
+  data.age = !isEmpty(data.age) ? data.age : '';
+  data.gender = !isEmpty(data.gender) ? data.gender : '';
+  data.medical_history = !isEmpty(data.medical_history) ? data.medical_history : '';
   data.address = !isEmpty(data.address) ? data.address : '';
+  data.district = !isEmpty(data.district) ? data.district : '';
 
   if (!Validator.isLength(data.name, { min: 2, max: 30 })) {
     errors.name = 'Name must be between 2 and 30 characters';
@@ -20,8 +24,24 @@ module.exports = function validatePatientOnboardInput(data) {
     errors.nic = 'Valid national ID field is required: eg:123456789V';
   }
 
+  if (Validator.isEmpty(data.age)) {
+    errors.age = 'Age field is required';
+  }
+
+  if (Validator.isEmpty(data.gender)) {
+    errors.gender = 'Gender field is required';
+  }
+
+  if (Validator.isEmpty(data.name)) {
+    errors.medical_history = 'Medical history field is required';
+  }
+
   if (Validator.isEmpty(data.address)) {
     errors.address = 'Address field is required';
+  }
+
+  if (Validator.isEmpty(data.district)) {
+    errors.district = 'District field is required';
   }
 
   return {
